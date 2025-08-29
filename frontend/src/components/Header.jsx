@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const BriefcaseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -26,9 +27,19 @@ const MenuIcon = () => (
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {  
+    navigate('/login');
+  }
+
+  const handlePost = () => {  
+    navigate('/post');
+  }
+
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-sm fixed top-0 left-0 w-full z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           
@@ -42,7 +53,9 @@ function Header() {
           <nav className="hidden md:flex items-center space-x-6">
             <a href="#" className="text-gray-600 hover:text-gray-900">Jobs</a>
             <a href="#" className="text-gray-600 hover:text-gray-900">Companies</a>
-            <a href="#" className="text-gray-600 hover:text-gray-900">About</a>
+            <Link to={'/about'}>
+              <a href="#" className="text-gray-600 hover:text-gray-900">About</a>
+            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -56,9 +69,13 @@ function Header() {
               />
             </div>
 
-            <button className="flex items-center space-x-2 px-5 py-2.5 text-white font-semibold bg-gradient-to-r from-blue-500 to-gray-800 rounded-lg shadow-md hover:opacity-90">
+            <button className="flex items-center space-x-2 px-5 py-2.5 text-white font-semibold bg-gradient-to-r from-blue-500 to-gray-800 rounded-lg shadow-md hover:opacity-90" onClick={handlePost}>
               <PlusIcon />
               <span>Post Job</span>
+            </button>
+
+            <button className="hidden md:flex items-center space-x-2 px-5 py-2.5 text-white font-semibold bg-gradient-to-r from-blue-500 to-gray-800 rounded-lg shadow-md hover:opacity-90" onClick={handleLogout}>
+              <span>Logout</span>
             </button>
 
             <div className="md:hidden">
@@ -75,6 +92,13 @@ function Header() {
                     <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Jobs</a>
                     <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Companies</a>
                     <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">About</a>
+                    <hr className="my-2" />
+                    <button 
+                        onClick={handleLogout} 
+                        className="text-left text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 font-semibold"
+                    >
+                        Logout
+                    </button>
                 </nav>
             </div>
         )}
