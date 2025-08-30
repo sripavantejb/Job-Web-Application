@@ -19,11 +19,13 @@ const MenuIcon = () => (
     </svg>
 );
 
+
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {  
+    alert("you have been logged out");
     navigate('/login');
   }
 
@@ -37,16 +39,25 @@ function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           
+          <Link to={'/'}>
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-800 rounded-lg">
               <BriefcaseIcon />
             </div>
             <span className="text-2xl font-bold text-gray-800">JobLink</span>
           </div>
+          </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#" className="text-gray-600 hover:text-gray-900">Jobs</a>
-            <a href="#" className="text-gray-600 hover:text-gray-900">Companies</a>
+            <Link to={'/'}>
+               <a href="#" className="text-gray-600 hover:text-gray-900">Home</a>
+            </Link>
+            <Link to={'/jobs'}>
+              <a href="#" className="text-gray-600 hover:text-gray-900">Jobs</a>
+            </Link>
+            <Link to={'/applicants'}>
+            <a href="#" className="text-gray-600 hover:text-gray-900">Applicants</a>
+            </Link>
             <Link to={'/about'}>
               <a href="#" className="text-gray-600 hover:text-gray-900">About</a>
             </Link>
@@ -76,7 +87,7 @@ function Header() {
             <div className="mt-4 md:hidden">
                 <nav className="flex flex-col space-y-2">
                     <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Jobs</a>
-                    <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Companies</a>
+                    <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Applicants</a>
                     <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">About</a>
                     <hr className="my-2" />
                     <button 

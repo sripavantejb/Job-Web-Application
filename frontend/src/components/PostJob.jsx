@@ -53,6 +53,17 @@ function PostJob() {
     postData();
   };
 
+  const handlePostButton = () => {
+    if (!title || !company || !location || !description) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    else{
+      navigate("/postsuccesspage");
+    }
+  }
+
+
   return (
     <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
@@ -110,7 +121,7 @@ function PostJob() {
                 </div>
               </div>
 
-              {/* Company Name Input */}
+
               <div className="sm:col-span-1">
                 <div>
                   <label
@@ -156,7 +167,8 @@ function PostJob() {
                 </div>
               </div>
 
-              {/* Salary Range Input */}
+
+
               <div className="sm:col-span-1">
                 <div>
                   <label
@@ -218,7 +230,7 @@ function PostJob() {
             >
               Cancel
             </button>
-            <button
+            <button onClick={handlePostButton}
               type="submit"
               className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >

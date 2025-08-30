@@ -5,6 +5,8 @@ import { Router, Routes, BrowserRouter, Route } from 'react-router-dom'
 import PostJob from './components/PostJob'
 import About from './components/About'
 import JobFeed from './components/JobFeed'
+import PostSuccessPage from './components/PostSuccessPage'
+import Applicants from './components/Applicants'
 
 function App() {
 
@@ -18,6 +20,8 @@ function App() {
         <Route path='/post' element={<PostJob></PostJob>}/>
         <Route path='/about' element={<About/>}/>
         <Route path='/jobs' element={<JobFeed/>}/>
+        <Route path='postsuccesspage' element={<PostSuccessPage/>}/>
+        <Route path='applicants'element={<Applicants/>}></Route>
       </Routes>
     </BrowserRouter>
     </>
