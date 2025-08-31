@@ -100,6 +100,7 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
     }
 
     const userId = req.user.id;
+    console.log("DEBUG: Raw userId from JWT:", userId, "type:", typeof userId, "length:", userId?.length);
 
     const job = await JobModel.findById(jobId);
     if (!job) {
@@ -124,16 +125,20 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
     }
 
     // Handle userId properly - it might already be an ObjectId or a string
-    let applicantId;
-    if (typeof userId === 'string') {
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'Invalid user ID format.' });
-      }
-      applicantId = new mongoose.Schema.Types.ObjectId(userId);
-    } else {
-      // If it's not a string, assume it's already a valid ObjectId instance
-      applicantId = userId;
+    console.log("DEBUG: Processing userId:", userId);
+    
+    // Ensure userId is a string and valid
+    if (typeof userId !== 'string') {
+      console.error("ERROR: userId is not a string:", userId, "type:", typeof userId);
+      return res.status(400).json({ message: 'Invalid user ID type.' });
     }
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.error("ERROR: Invalid userId format:", userId);
+      return res.status(400).json({ message: 'Invalid user ID format.' });
+    }
+    
+    const applicantId = new mongoose.Schema.Types.ObjectId(userId);
     
     console.log("applicantId type:", typeof applicantId, "value:", applicantId);
     job.applicants.push(applicantId);
