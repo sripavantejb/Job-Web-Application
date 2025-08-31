@@ -3,7 +3,10 @@ import jsonwebtoken from "jsonwebtoken";
 const jwt = jsonwebtoken;
 
 interface AuthRequest extends Request {
-  user?: any;
+  user?: {
+    id: string;
+    email: string;
+  };
 }
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -14,10 +17,12 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; email: string };
     req.user = decoded;
+    console.log("DEBUG: Decoded user:", decoded);
     next();
   } catch (err) {
+    console.error("JWT verification error:", err);
     return res.status(401).json({ message: "Invalid token" });
   }
 };
