@@ -106,11 +106,11 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
         return res.status(404).json({ message: 'Job not found' });
       }
   
-      if (job.createdBy.toString() === userId) {
+      if (job.createdBy && job.createdBy.toString() === userId) {
           return res.status(400).json({ message: "You cannot apply to your own job post." });
       }
   
-      const applicantsAsStrings = job.applicants.map(applicantId => applicantId.toString());
+      const applicantsAsStrings = job.applicants.map(applicantId => applicantId && applicantId.toString()).filter(Boolean);
       if (applicantsAsStrings.includes(userId)) {
         return res.status(400).json({ message: 'You have already applied for this job' });
       }

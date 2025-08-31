@@ -68,6 +68,10 @@ const handleApply = async (jobId) => {
     console.log("Applying for job:", jobId);
     console.log("Token:", Cookies.get('token'));
     
+    // TEMPORARY: Test button state change immediately
+    setAppliedJobs(prev => new Set([...prev, jobId]));
+    console.log("Button state updated for job:", jobId);
+    
     try {
         const options = {
             method: 'POST',
@@ -85,14 +89,26 @@ const handleApply = async (jobId) => {
 
         if (response.ok) {
             toast.success(data.message || "Applied successfully!");
-            // Add the job to applied jobs set
-            setAppliedJobs(prev => new Set([...prev, jobId]));
+            console.log("Job applied successfully, updating button state for job:", jobId);
         } else {
             toast.error(data.message || "Failed to apply.");
+            console.log("Failed to apply, response status:", response.status);
+            // Revert the button state if API call failed
+            setAppliedJobs(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(jobId);
+                return newSet;
+            });
         }
     } catch (error) {
         console.error("Apply error:", error);
         toast.error("An error occurred. Please try again.");
+        // Revert the button state if API call failed
+        setAppliedJobs(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(jobId);
+            return newSet;
+        });
     }
 };
 
