@@ -6,8 +6,12 @@ import { ToastContainer, toast } from 'react-toastify';
 
 function JobFeed() {
     const [jobListings, setJobListings] = React.useState([]);
+    const [filteredJobs, setFilteredJobs] = React.useState([]);
     const [appliedJobs, setAppliedJobs] = React.useState(new Set());
     const [currentUserId, setCurrentUserId] = React.useState(null);
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const [locationFilter, setLocationFilter] = React.useState('All locations');
+    const [typeFilter, setTypeFilter] = React.useState('All types');
 
     const jobsData = async () => {
         const options = {
@@ -25,8 +29,51 @@ function JobFeed() {
     useEffect(() => {
         jobsData().then(data => {
             setJobListings(data);
+            setFilteredJobs(data);
         });
     }, []);
+
+    // Filter jobs based on search term and filters
+    useEffect(() => {
+        let filtered = jobListings;
+
+        // Apply search filter
+        if (searchTerm) {
+            filtered = filtered.filter(job => 
+                job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                job.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Apply location filter
+        if (locationFilter !== 'All locations') {
+            filtered = filtered.filter(job => 
+                job.location.toLowerCase().includes(locationFilter.toLowerCase())
+            );
+        }
+
+        // Apply type filter (you can customize this based on your job types)
+        if (typeFilter !== 'All types') {
+            // For now, we'll filter by job title keywords
+            const typeKeywords = {
+                'Full-time': ['full', 'full-time', 'permanent'],
+                'Contract': ['contract', 'temporary', 'freelance'],
+                'Internship': ['intern', 'internship', 'student']
+            };
+            
+            if (typeKeywords[typeFilter]) {
+                filtered = filtered.filter(job => 
+                    typeKeywords[typeFilter].some(keyword => 
+                        job.title.toLowerCase().includes(keyword) ||
+                        job.description.toLowerCase().includes(keyword)
+                    )
+                );
+            }
+        }
+
+        setFilteredJobs(filtered);
+    }, [jobListings, searchTerm, locationFilter, typeFilter]);
 
     // Get current user ID and check applied jobs
     useEffect(() => {
@@ -150,11 +197,27 @@ const handleApply = async (jobId) => {
                                 <input
                                     type="text"
                                     placeholder="Search jobs, companies, or keywords..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full pl-10 pr-4 py-2 border rounded-md"
                                 />
+                                {searchTerm && (
+                                    <button
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
                             <div>
-                                <select className="w-full py-2 px-3 border rounded-md">
+                                <select 
+                                    className="w-full py-2 px-3 border rounded-md"
+                                    value={locationFilter}
+                                    onChange={(e) => setLocationFilter(e.target.value)}
+                                >
                                     <option>All locations</option>
                                     <option>Remote</option>
                                     <option>New York, NY</option>
@@ -162,7 +225,11 @@ const handleApply = async (jobId) => {
                                 </select>
                             </div>
                             <div>
-                                <select className="w-full py-2 px-3 border rounded-md">
+                                <select 
+                                    className="w-full py-2 px-3 border rounded-md"
+                                    value={typeFilter}
+                                    onChange={(e) => setTypeFilter(e.target.value)}
+                                >
                                     <option>All types</option>
                                     <option>Full-time</option>
                                     <option>Contract</option>
@@ -174,13 +241,13 @@ const handleApply = async (jobId) => {
                     
                     <div className="mb-6">
                         <p className="text-sm text-gray-600">
-                            Showing 1-6 of 6 jobs
+                            Showing {filteredJobs.length} of {jobListings.length} jobs
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                        {jobListings.map((job, index) => (
+                        {filteredJobs.map((job, index) => (
                             <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300">
                                 <div className="flex justify-between items-start">
                                     <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>

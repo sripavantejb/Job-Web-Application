@@ -138,7 +138,7 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Invalid user ID format.' });
     }
     
-    const applicantId = new mongoose.Schema.Types.ObjectId(userId);
+    const applicantId = new mongoose.Types.ObjectId(userId);
     
     console.log("applicantId type:", typeof applicantId, "value:", applicantId);
     job.applicants.push(applicantId);
