@@ -124,7 +124,7 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
     }
 
     // Push applicant as ObjectId
-    job.applicants.push(new mongoose.Types.ObjectId(userId));
+    job.applicants.push(new mongoose.Schema.Types.ObjectId(userId));
 
     // ✅ Skip re-validation of createdBy (avoids validation error on save)
     await job.save({ validateBeforeSave: false });

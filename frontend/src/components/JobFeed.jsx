@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 function JobFeed() {
     const [jobListings, setJobListings] = React.useState([]);
     const [appliedJobs, setAppliedJobs] = React.useState(new Set());
+    const [currentUserId, setCurrentUserId] = React.useState(null);
 
     const jobsData = async () => {
         const options = {
@@ -27,9 +28,9 @@ function JobFeed() {
         });
     }, []);
 
-    // Check if user has already applied to any jobs
+    // Get current user ID and check applied jobs
     useEffect(() => {
-        const checkAppliedJobs = async () => {
+        const getCurrentUserAndAppliedJobs = async () => {
             try {
                 const options = {
                     method: 'GET',
@@ -39,9 +40,17 @@ function JobFeed() {
                     }
                 };
                 
-                const response = await fetch('https://job-web-application-ktk3.onrender.com/api/jobs/my-applicants', options);
-                if (response.ok) {
-                    const data = await response.json();
+                // Get current user info
+                const userResponse = await fetch('https://job-web-application-ktk3.onrender.com/api/auth/me', options);
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    setCurrentUserId(userData.user._id || userData.user.id);
+                }
+                
+                // Get applied jobs
+                const appliedResponse = await fetch('https://job-web-application-ktk3.onrender.com/api/jobs/my-applicants', options);
+                if (appliedResponse.ok) {
+                    const data = await appliedResponse.json();
                     // Extract job IDs from jobs where user is an applicant
                     const appliedJobIds = new Set();
                     data.jobs?.forEach(job => {
@@ -56,11 +65,11 @@ function JobFeed() {
                     setAppliedJobs(appliedJobIds);
                 }
             } catch (error) {
-                console.error("Error checking applied jobs:", error);
+                console.error("Error getting user info and applied jobs:", error);
             }
         };
         
-        checkAppliedJobs();
+        getCurrentUserAndAppliedJobs();
     }, []);
 
 
@@ -91,7 +100,12 @@ const handleApply = async (jobId) => {
             toast.success(data.message || "Applied successfully!");
             console.log("Job applied successfully, updating button state for job:", jobId);
         } else {
-            toast.error(data.message || "Failed to apply.");
+            // Don't show error for "own job" - just inform the user
+            if (data.message === "You cannot apply to your own job post.") {
+                toast.info("You cannot apply to your own job post.");
+            } else {
+                toast.error(data.message || "Failed to apply.");
+            }
             console.log("Failed to apply, response status:", response.status);
             // Revert the button state if API call failed
             setAppliedJobs(prev => {
@@ -198,14 +212,21 @@ const handleApply = async (jobId) => {
 
                                     <button 
                                         onClick={() => !appliedJobs.has(job._id) && handleApply(job._id)} 
-                                        disabled={appliedJobs.has(job._id)}
+                                        disabled={appliedJobs.has(job._id) || (currentUserId && job.createdBy === currentUserId)}
                                         className={`px-4 py-2 rounded-md transition-colors duration-300 ${
                                             appliedJobs.has(job._id)
                                                 ? 'bg-blue-300 text-white cursor-not-allowed'
+                                                : (currentUserId && job.createdBy === currentUserId)
+                                                ? 'bg-gray-400 text-white cursor-not-allowed'
                                                 : 'bg-blue-600 text-white hover:bg-blue-700'
                                         }`}
                                     >
-                                        {appliedJobs.has(job._id) ? 'Applied!' : 'Apply Now'}
+                                        {appliedJobs.has(job._id) 
+                                            ? 'Applied!' 
+                                            : (currentUserId && job.createdBy === currentUserId)
+                                            ? 'Your Job'
+                                            : 'Apply Now'
+                                        }
                                     </button>
                                 </div>
                             </div>

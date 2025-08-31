@@ -7,8 +7,8 @@ export interface Job {
     location: string; 
     salary: string; 
     postedDate?: Date;
-    createdBy: mongoose.Types.ObjectId; 
-    applicants: mongoose.Types.ObjectId[]; 
+    createdBy: mongoose.Schema.Types.ObjectId; 
+    applicants: mongoose.Schema.Types.ObjectId[]; 
 }
 
 const jobSchema = new mongoose.Schema<Job>({ 
