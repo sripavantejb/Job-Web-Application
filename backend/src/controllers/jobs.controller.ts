@@ -123,11 +123,21 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
         .json({ message: "You have already applied for this job" });
     }
 
-    // Push applicant as ObjectId
-    job.applicants.push(new mongoose.Schema.Types.ObjectId(userId));
-
-    // ✅ Skip re-validation of createdBy (avoids validation error on save)
-    await job.save({ validateBeforeSave: false });
+    // Handle userId properly - it might already be an ObjectId or a string
+    let applicantId;
+    if (typeof userId === 'string') {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format.' });
+      }
+      applicantId = new mongoose.Schema.Types.ObjectId(userId);
+    } else {
+      // If it's not a string, assume it's already a valid ObjectId instance
+      applicantId = userId;
+    }
+    
+    console.log("applicantId type:", typeof applicantId, "value:", applicantId);
+    job.applicants.push(applicantId);
+    await job.save();
 
     return res.status(200).json({ message: "Applied successfully!" });
   } catch (error) {

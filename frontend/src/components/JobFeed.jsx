@@ -41,10 +41,14 @@ function JobFeed() {
                 };
                 
                 // Get current user info
-                const userResponse = await fetch('https://job-web-application-ktk3.onrender.com/api/auth/me', options);
-                if (userResponse.ok) {
-                    const userData = await userResponse.json();
-                    setCurrentUserId(userData.user._id || userData.user.id);
+                try {
+                    const userResponse = await fetch('https://job-web-application-ktk3.onrender.com/api/auth/me', options);
+                    if (userResponse.ok) {
+                        const userData = await userResponse.json();
+                        setCurrentUserId(userData.user._id || userData.user.id);
+                    }
+                } catch (error) {
+                    console.log("Could not fetch user info, continuing without user ID:", error);
                 }
                 
                 // Get applied jobs
