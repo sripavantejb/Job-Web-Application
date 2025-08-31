@@ -171,3 +171,23 @@ export const getJobApplicants = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+// get jobs posted by current user with applicants
+export const getMyJobsWithApplicants = async (req: AuthRequest, res: Response) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication error, user not found.' });
+        }
+        const userId = req.user.id;
+
+        // Find all jobs created by the current user and populate applicants with user details
+        const jobs = await JobModel.find({ createdBy: userId })
+            .populate('applicants', 'username email') // Populate applicant details
+            .sort({ postedDate: -1 }); // Sort by newest first
+
+        res.status(200).json({ jobs });
+    } catch (error) {
+        console.error("Get my jobs error:", error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
