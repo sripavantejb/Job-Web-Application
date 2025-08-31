@@ -53,7 +53,7 @@ interface AuthRequest extends Request {
 // to get a single job by ID
 export async function getJobById(req: Request, res: Response) {
     try {
-        const job = await JobModel.findById(req.params.id);
+        const job = await JobModel.findById(req.params.jobId);
         if (!job) {
             return res.status(404).json({ message: "Job not found" });
         }
@@ -66,7 +66,7 @@ export async function getJobById(req: Request, res: Response) {
 // to update a job by ID
 export async function updateJobById(req: Request, res: Response) {
     try {
-        const job = await JobModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const job = await JobModel.findByIdAndUpdate(req.params.jobId, req.body, { new: true });
         if (!job) {
             return res.status(404).json({ message: "Job not found" });
         }
@@ -78,7 +78,7 @@ export async function updateJobById(req: Request, res: Response) {
 // to delete a job by ID
 export async function deleteJobById(req: Request, res: Response) {
     try {
-        const job = await JobModel.findByIdAndDelete(req.params.id);
+        const job = await JobModel.findByIdAndDelete(req.params.jobId);
         if (!job) {
             return res.status(404).json({ message: "Job not found" });
         }
