@@ -99,6 +99,7 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
         return res.status(401).json({ message: 'Authentication error, user not found.' });
       }
       const userId = req.user.id;
+      console.log("userId type:", typeof userId, "value:", userId);
   
       const job = await JobModel.findById(jobId);
   
@@ -116,7 +117,21 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
       }
   
 
-      job.applicants.push(new mongoose.Schema.Types.ObjectId(userId));
+      // Handle userId properly - it might already be an ObjectId or a string
+      let applicantId;
+      if (typeof userId === 'string') {
+        // Validate that it's a valid ObjectId string
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ message: 'Invalid user ID format.' });
+        }
+        applicantId = new mongoose.Schema.Types.ObjectId(userId);
+      } else {
+        // If it's not a string, it should already be an ObjectId
+        applicantId = userId;
+      }
+      
+      console.log("applicantId to push:", applicantId);
+      job.applicants.push(applicantId);
       await job.save();
   
       res.status(200).json({ message: 'Applied successfully!' });
