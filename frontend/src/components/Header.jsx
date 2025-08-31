@@ -49,17 +49,17 @@ function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to={'/'}>
-               <a href="#" className="text-gray-600 hover:text-gray-900">Home</a>
+            <Link to={'/'} className="text-gray-600 hover:text-gray-900">
+              Home
             </Link>
-            <Link to={'/jobs'}>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Jobs</a>
+            <Link to={'/jobs'} className="text-gray-600 hover:text-gray-900">
+              Jobs
             </Link>
-            <Link to={'/applicants'}>
-            <a href="#" className="text-gray-600 hover:text-gray-900">Applicants</a>
+            <Link to={'/applicants'} className="text-gray-600 hover:text-gray-900">
+              Applicants
             </Link>
-            <Link to={'/about'}>
-              <a href="#" className="text-gray-600 hover:text-gray-900">About</a>
+            <Link to={'/about'} className="text-gray-600 hover:text-gray-900">
+              About
             </Link>
           </nav>
 
@@ -86,9 +86,15 @@ function Header() {
         {isMenuOpen && (
             <div className="mt-4 md:hidden">
                 <nav className="flex flex-col space-y-2">
-                    <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Jobs</a>
-                    <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">Applicants</a>
-                    <a href="#" className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">About</a>
+                    <Link to={'/jobs'} className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">
+                        Jobs
+                    </Link>
+                    <Link to={'/applicants'} className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">
+                        Applicants
+                    </Link>
+                    <Link to={'/about'} className="text-gray-600 hover:text-gray-900 p-2 rounded hover:bg-gray-100">
+                        About
+                    </Link>
                     <hr className="my-2" />
                     <button 
                         onClick={handleLogout} 

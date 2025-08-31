@@ -2,6 +2,7 @@ import React from 'react';
 import Header from './Header';
 import Cookies from 'js-cookie';
 import { useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 
 function JobFeed() {
     const [jobListings, setJobListings] = React.useState([]);
@@ -24,6 +25,37 @@ function JobFeed() {
             setJobListings(data);
         });
     }, []);
+
+
+const handleApply = async (jobId) => {
+    console.log("Applying for job:", jobId);
+    console.log("Token:", Cookies.get('token'));
+    
+    try {
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        };
+        
+        const response = await fetch(`https://job-web-application-ktk3.onrender.com/api/jobs/${jobId}/apply`, options);
+        const data = await response.json();
+
+        console.log("Response:", response);
+        console.log("Data:", data);
+
+        if (response.ok) {
+            toast.success(data.message || "Applied successfully!");
+        } else {
+            toast.error(data.message || "Failed to apply.");
+        }
+    } catch (error) {
+        console.error("Apply error:", error);
+        toast.error("An error occurred. Please try again.");
+    }
+};
 
     return (
 
@@ -109,7 +141,10 @@ function JobFeed() {
                                         <span className="font-bold text-green-600">{job.salary}</span>
                                     </div>
 
-                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                                    <button 
+                                        onClick={() => handleApply(job._id)} 
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300"
+                                    >
                                         Apply Now
                                     </button>
                                 </div>

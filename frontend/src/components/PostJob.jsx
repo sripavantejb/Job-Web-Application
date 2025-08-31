@@ -18,6 +18,10 @@ function PostJob() {
   const handlePost = (e) => {
     e.preventDefault();
     const postData = async () => {
+      if (!title || !company || !location || !description) {
+        toast.error("Please fill in all required fields.");
+        return;
+      }
       try {
         const options = {
           method: "POST",
@@ -42,6 +46,7 @@ function PostJob() {
         if (response.ok) {
           toast.success("Job Posted Successfully!"); // show toast only if successful
           console.log("Success:", data);
+          navigate("/postsuccesspage");
         } else {
           toast.error(data.message || "Failed to post job"); // error toast
         }
@@ -52,17 +57,6 @@ function PostJob() {
     };
     postData();
   };
-
-  const handlePostButton = () => {
-    if (!title || !company || !location || !description) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-    else{
-      navigate("/postsuccesspage");
-    }
-  }
-
 
   return (
     <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -230,7 +224,7 @@ function PostJob() {
             >
               Cancel
             </button>
-            <button onClick={handlePostButton}
+            <button 
               type="submit"
               className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
