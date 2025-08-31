@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { JobModel } from "../models/jobs.model.js";
-import mongoose, { Types } from 'mongoose'; 
+import mongoose from 'mongoose'; 
 
 
 
@@ -122,7 +122,8 @@ export const applyForJob = async (req: AuthRequest, res: Response) => {
       res.status(200).json({ message: 'Applied successfully!' });
   
     } catch (error) {
-      res.status(500).json({ message: 'Server Error' });
+      console.error("Apply for job error:", error);
+      res.status(500).json({ message: 'Server Error', error: error instanceof Error ? error.message : 'Unknown error' });
     }
   };
 

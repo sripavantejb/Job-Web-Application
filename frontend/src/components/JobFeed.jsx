@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 
 function JobFeed() {
     const [jobListings, setJobListings] = React.useState([]);
+    const [appliedJobs, setAppliedJobs] = React.useState(new Set());
 
     const jobsData = async () => {
         const options = {
@@ -24,6 +25,42 @@ function JobFeed() {
         jobsData().then(data => {
             setJobListings(data);
         });
+    }, []);
+
+    // Check if user has already applied to any jobs
+    useEffect(() => {
+        const checkAppliedJobs = async () => {
+            try {
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${Cookies.get('token')}`
+                    }
+                };
+                
+                const response = await fetch('https://job-web-application-ktk3.onrender.com/api/jobs/my-applicants', options);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Extract job IDs from jobs where user is an applicant
+                    const appliedJobIds = new Set();
+                    data.jobs?.forEach(job => {
+                        if (job.applicants && job.applicants.length > 0) {
+                            job.applicants.forEach(applicant => {
+                                if (applicant._id || applicant.id) {
+                                    appliedJobIds.add(job._id);
+                                }
+                            });
+                        }
+                    });
+                    setAppliedJobs(appliedJobIds);
+                }
+            } catch (error) {
+                console.error("Error checking applied jobs:", error);
+            }
+        };
+        
+        checkAppliedJobs();
     }, []);
 
 
@@ -48,6 +85,8 @@ const handleApply = async (jobId) => {
 
         if (response.ok) {
             toast.success(data.message || "Applied successfully!");
+            // Add the job to applied jobs set
+            setAppliedJobs(prev => new Set([...prev, jobId]));
         } else {
             toast.error(data.message || "Failed to apply.");
         }
@@ -142,10 +181,15 @@ const handleApply = async (jobId) => {
                                     </div>
 
                                     <button 
-                                        onClick={() => handleApply(job._id)} 
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300"
+                                        onClick={() => !appliedJobs.has(job._id) && handleApply(job._id)} 
+                                        disabled={appliedJobs.has(job._id)}
+                                        className={`px-4 py-2 rounded-md transition-colors duration-300 ${
+                                            appliedJobs.has(job._id)
+                                                ? 'bg-blue-300 text-white cursor-not-allowed'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        }`}
                                     >
-                                        Apply Now
+                                        {appliedJobs.has(job._id) ? 'Applied!' : 'Apply Now'}
                                     </button>
                                 </div>
                             </div>
